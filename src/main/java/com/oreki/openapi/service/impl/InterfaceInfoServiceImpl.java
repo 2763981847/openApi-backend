@@ -1,17 +1,35 @@
 package com.oreki.openapi.service.impl;
 
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
+import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.oreki.openapi.common.ErrorCode;
+import com.oreki.openapi.constant.CommonConstant;
 import com.oreki.openapi.exception.BusinessException;
 import com.oreki.openapi.exception.ThrowUtils;
 import com.oreki.openapi.mapper.InterfaceInfoMapper;
+import com.oreki.openapi.model.dto.interfaceInfo.InterfaceInfoQueryRequest;
 import com.oreki.openapi.model.entity.InterfaceInfo;
+import com.oreki.openapi.model.entity.Post;
+import com.oreki.openapi.model.vo.InterfaceInfoVO;
+import com.oreki.openapi.model.vo.PostVO;
 import com.oreki.openapi.service.InterfaceInfoService;
+import com.oreki.openapi.utils.SqlUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Oreki
@@ -45,6 +63,47 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
         if (StringUtils.isNotBlank(name) && name.length() > 50) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口名过长");
         }
+    }
+
+    @Override
+    public QueryWrapper<InterfaceInfo> getQueryWrapper(InterfaceInfoQueryRequest interfaceInfoQueryRequest) {
+        QueryWrapper<InterfaceInfo> queryWrapper = new QueryWrapper<>();
+        if (interfaceInfoQueryRequest == null) {
+            return queryWrapper;
+        }
+        Long id = interfaceInfoQueryRequest.getId();
+        String name = interfaceInfoQueryRequest.getName();
+        String description = interfaceInfoQueryRequest.getDescription();
+        String url = interfaceInfoQueryRequest.getUrl();
+        Long userId = interfaceInfoQueryRequest.getUserId();
+        String sortField = interfaceInfoQueryRequest.getSortField();
+        String sortOrder = interfaceInfoQueryRequest.getSortOrder();
+        queryWrapper.like(StringUtils.isNotBlank(name), "name", name);
+        queryWrapper.like(StringUtils.isNotBlank(description), "description", description);
+        queryWrapper.like(StringUtils.isNotBlank(url), "url", url);
+        queryWrapper.eq(ObjectUtils.isNotEmpty(id), "id", id);
+        queryWrapper.eq(ObjectUtils.isNotEmpty(userId), "userId", userId);
+        queryWrapper.orderBy(SqlUtils.validSortField(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC),
+                sortField);
+        LambdaQueryWrapper<Object> wrapper = new LambdaQueryWrapper<>();
+        return queryWrapper;
+    }
+
+    @Override
+    public Page<InterfaceInfoVO> getInterfaceInfoVOPage(Page<InterfaceInfo> interfaceInfoPage, HttpServletRequest request) {
+        List<InterfaceInfo> interfaceInfoList = interfaceInfoPage.getRecords();
+        Page<InterfaceInfoVO> interfaceInfoVOPage = new Page<>(interfaceInfoPage.getCurrent(), interfaceInfoPage.getSize(), interfaceInfoPage.getTotal());
+        if (CollectionUtils.isEmpty(interfaceInfoList)) {
+            return interfaceInfoVOPage;
+        }
+        interfaceInfoVOPage.setRecords(
+                interfaceInfoList.stream().map(interfaceInfo -> {
+                    InterfaceInfoVO interfaceInfoVO = new InterfaceInfoVO();
+                    BeanUtil.copyProperties(interfaceInfo, interfaceInfoVO);
+                    return interfaceInfoVO;
+                }).collect(Collectors.toList())
+        );
+        return interfaceInfoVOPage;
     }
 }
 

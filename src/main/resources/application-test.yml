@@ -5,8 +5,8 @@ spring:
   # todo 需替换配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${VPS_HOST:localhost}:3306/my_db
-    username: root
+    url: jdbc:mysql://${VPS_HOST:localhost}:3306/openApi
+    username: oreki
     password: ${PASSWORD}
   # Redis 配置
   # todo 需替换配置

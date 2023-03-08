@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.oreki.openapi.model.dto.interfaceInfo.InterfaceInfoQueryRequest;
 import com.oreki.openapi.model.entity.InterfaceInfo;
 import com.oreki.openapi.model.entity.InterfaceInfo;
+import com.oreki.openapi.model.entity.Post;
 import com.oreki.openapi.model.vo.InterfaceInfoVO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,4 +26,19 @@ public interface InterfaceInfoService extends IService<InterfaceInfo> {
      */
     void validInterfaceInfo(InterfaceInfo interfaceInfo, boolean add);
 
+    /**
+     * 构建查询条件
+     *
+     * @param interfaceInfoQueryRequest
+     * @return
+     */
+    QueryWrapper<InterfaceInfo> getQueryWrapper(InterfaceInfoQueryRequest interfaceInfoQueryRequest);
+
+    /**
+     * 分页获取接口信息封装
+     * @param interfaceInfoPage
+     * @param request
+     * @return
+     */
+    Page<InterfaceInfoVO> getInterfaceInfoVOPage(Page<InterfaceInfo> interfaceInfoPage, HttpServletRequest request);
 }
