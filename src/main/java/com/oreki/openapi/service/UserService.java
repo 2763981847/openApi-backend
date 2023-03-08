@@ -1,14 +1,16 @@
 package com.oreki.openapi.service;
 
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.oreki.openapi.model.dto.user.UserQueryRequest;
 import com.oreki.openapi.model.entity.User;
 import com.oreki.openapi.model.vo.LoginUserVO;
 import com.oreki.openapi.model.vo.UserVO;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * 用户服务

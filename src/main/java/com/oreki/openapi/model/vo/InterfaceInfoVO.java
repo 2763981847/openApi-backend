@@ -1,19 +1,15 @@
-package com.oreki.openapi.model.dto.interfaceInfo;
+package com.oreki.openapi.model.vo;
 
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
 
 /**
- * 更新请求
- *
- * @author Oreki
+ * @author Fu Qiujie
+ * @since 2023/3/8
  */
 @Data
-public class InterfaceInfoUpdateRequest implements Serializable {
-    private Long id;
+public class InterfaceInfoVO implements Serializable {
 
     /**
      * 接口名
@@ -24,6 +20,11 @@ public class InterfaceInfoUpdateRequest implements Serializable {
      * 描述
      */
     private String description;
+
+    /**
+     * 接口状态（0 - 关闭， 1 - 开启））
+     */
+    private Integer status;
 
     /**
      * 接口地址
@@ -40,17 +41,16 @@ public class InterfaceInfoUpdateRequest implements Serializable {
      */
     private String responseHeader;
 
-
-    /**
-     * 接口状态（0 - 关闭， 1 - 开启））
-     */
-    private Integer status;
-
     /**
      * 请求类型
      */
     private String method;
 
+    /**
+     * 创建人
+     */
+    private Long userId;
 
     private static final long serialVersionUID = 1L;
+
 }

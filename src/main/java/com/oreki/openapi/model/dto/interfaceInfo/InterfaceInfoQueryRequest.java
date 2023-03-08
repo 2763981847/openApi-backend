@@ -11,8 +11,7 @@ import java.util.List;
 /**
  * 查询请求
  *
- * @author <a href="https://github.com/liyupi">程序员鱼皮</a>
- * @from <a href="https://yupi.icu">编程导航知识星球</a>
+ * @author Oreki
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -20,7 +19,7 @@ public class InterfaceInfoQueryRequest extends PageRequest implements Serializab
     private Long id;
 
     /**
-     * 用户名
+     * 接口名
      */
     private String name;
 
@@ -47,7 +46,7 @@ public class InterfaceInfoQueryRequest extends PageRequest implements Serializab
     /**
      * 创建人
      */
-    private String userId;
+    private Long userId;
 
     /**
      * 接口状态（0 - 关闭， 1 - 开启））
@@ -59,20 +58,4 @@ public class InterfaceInfoQueryRequest extends PageRequest implements Serializab
      */
     private String method;
 
-    /**
-     * 创建时间
-     */
-    private Date createTime;
-
-    /**
-     * 更新时间
-     */
-    private Date updateTime;
-
-    /**
-     * 是否删除(0-未删, 1-已删)
-     */
-    private Integer isDelete;
-
-    private static final long serialVersionUID = 1L;
 }

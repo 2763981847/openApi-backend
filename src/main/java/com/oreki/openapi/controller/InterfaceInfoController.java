@@ -11,16 +11,17 @@ import com.oreki.openapi.constant.UserConstant;
 import com.oreki.openapi.exception.BusinessException;
 import com.oreki.openapi.exception.ThrowUtils;
 import com.oreki.openapi.model.dto.interfaceInfo.InterfaceInfoAddRequest;
-import com.oreki.openapi.model.dto.interfaceInfo.InterfaceInfoEditRequest;
 import com.oreki.openapi.model.dto.interfaceInfo.InterfaceInfoQueryRequest;
 import com.oreki.openapi.model.dto.interfaceInfo.InterfaceInfoUpdateRequest;
 import com.oreki.openapi.model.entity.InterfaceInfo;
 import com.oreki.openapi.model.entity.User;
+import com.oreki.openapi.model.vo.InterfaceInfoVO;
 import com.oreki.openapi.service.InterfaceInfoService;
 import com.oreki.openapi.service.UserService;
-import java.util.List;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -58,15 +59,9 @@ public class InterfaceInfoController {
         }
         InterfaceInfo interfaceInfo = new InterfaceInfo();
         BeanUtils.copyProperties(interfaceInfoAddRequest, interfaceInfo);
-        List<String> tags = interfaceInfoAddRequest.getTags();
-        if (tags != null) {
-            interfaceInfo.setTags(GSON.toJson(tags));
-        }
         interfaceInfoService.validInterfaceInfo(interfaceInfo, true);
         User loginUser = userService.getLoginUser(request);
         interfaceInfo.setUserId(loginUser.getId());
-        interfaceInfo.setFavourNum(0);
-        interfaceInfo.setThumbNum(0);
         boolean result = interfaceInfoService.save(interfaceInfo);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         long newInterfaceInfoId = interfaceInfo.getId();
@@ -112,129 +107,12 @@ public class InterfaceInfoController {
         }
         InterfaceInfo interfaceInfo = new InterfaceInfo();
         BeanUtils.copyProperties(interfaceInfoUpdateRequest, interfaceInfo);
-        List<String> tags = interfaceInfoUpdateRequest.getTags();
-        if (tags != null) {
-            interfaceInfo.setTags(GSON.toJson(tags));
-        }
         // 参数校验
         interfaceInfoService.validInterfaceInfo(interfaceInfo, false);
         long id = interfaceInfoUpdateRequest.getId();
         // 判断是否存在
         InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(id);
         ThrowUtils.throwIf(oldInterfaceInfo == null, ErrorCode.NOT_FOUND_ERROR);
-        boolean result = interfaceInfoService.updateById(interfaceInfo);
-        return ResultUtils.success(result);
-    }
-
-    /**
-     * 根据 id 获取
-     *
-     * @param id
-     * @return
-     */
-    @GetMapping("/get/vo")
-    public BaseResponse<InterfaceInfoVO> getInterfaceInfoVOById(long id, HttpServletRequest request) {
-        if (id <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        InterfaceInfo interfaceInfo = interfaceInfoService.getById(id);
-        if (interfaceInfo == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
-        }
-        return ResultUtils.success(interfaceInfoService.getInterfaceInfoVO(interfaceInfo, request));
-    }
-
-    /**
-     * 分页获取列表（封装类）
-     *
-     * @param interfaceInfoQueryRequest
-     * @param request
-     * @return
-     */
-    @PostMapping("/list/page/vo")
-    public BaseResponse<Page<InterfaceInfoVO>> listInterfaceInfoVOByPage(@RequestBody InterfaceInfoQueryRequest interfaceInfoQueryRequest,
-                                                       HttpServletRequest request) {
-        long current = interfaceInfoQueryRequest.getCurrent();
-        long size = interfaceInfoQueryRequest.getPageSize();
-        // 限制爬虫
-        ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
-        Page<InterfaceInfo> interfaceInfoPage = interfaceInfoService.page(new Page<>(current, size),
-                interfaceInfoService.getQueryWrapper(interfaceInfoQueryRequest));
-        return ResultUtils.success(interfaceInfoService.getInterfaceInfoVOPage(interfaceInfoPage, request));
-    }
-
-    /**
-     * 分页获取当前用户创建的资源列表
-     *
-     * @param interfaceInfoQueryRequest
-     * @param request
-     * @return
-     */
-    @PostMapping("/my/list/page/vo")
-    public BaseResponse<Page<InterfaceInfoVO>> listMyInterfaceInfoVOByPage(@RequestBody InterfaceInfoQueryRequest interfaceInfoQueryRequest,
-                                                         HttpServletRequest request) {
-        if (interfaceInfoQueryRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        User loginUser = userService.getLoginUser(request);
-        interfaceInfoQueryRequest.setUserId(loginUser.getId());
-        long current = interfaceInfoQueryRequest.getCurrent();
-        long size = interfaceInfoQueryRequest.getPageSize();
-        // 限制爬虫
-        ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
-        Page<InterfaceInfo> interfaceInfoPage = interfaceInfoService.page(new Page<>(current, size),
-                interfaceInfoService.getQueryWrapper(interfaceInfoQueryRequest));
-        return ResultUtils.success(interfaceInfoService.getInterfaceInfoVOPage(interfaceInfoPage, request));
-    }
-
-    // endregion
-
-    /**
-     * 分页搜索（从 ES 查询，封装类）
-     *
-     * @param interfaceInfoQueryRequest
-     * @param request
-     * @return
-     */
-    @PostMapping("/search/page/vo")
-    public BaseResponse<Page<InterfaceInfoVO>> searchInterfaceInfoVOByPage(@RequestBody InterfaceInfoQueryRequest interfaceInfoQueryRequest,
-                                                         HttpServletRequest request) {
-        long size = interfaceInfoQueryRequest.getPageSize();
-        // 限制爬虫
-        ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
-        Page<InterfaceInfo> interfaceInfoPage = interfaceInfoService.searchFromEs(interfaceInfoQueryRequest);
-        return ResultUtils.success(interfaceInfoService.getInterfaceInfoVOPage(interfaceInfoPage, request));
-    }
-
-    /**
-     * 编辑（用户）
-     *
-     * @param interfaceInfoEditRequest
-     * @param request
-     * @return
-     */
-    @PostMapping("/edit")
-    public BaseResponse<Boolean> editInterfaceInfo(@RequestBody InterfaceInfoEditRequest interfaceInfoEditRequest, HttpServletRequest request) {
-        if (interfaceInfoEditRequest == null || interfaceInfoEditRequest.getId() <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        InterfaceInfo interfaceInfo = new InterfaceInfo();
-        BeanUtils.copyProperties(interfaceInfoEditRequest, interfaceInfo);
-        List<String> tags = interfaceInfoEditRequest.getTags();
-        if (tags != null) {
-            interfaceInfo.setTags(GSON.toJson(tags));
-        }
-        // 参数校验
-        interfaceInfoService.validInterfaceInfo(interfaceInfo, false);
-        User loginUser = userService.getLoginUser(request);
-        long id = interfaceInfoEditRequest.getId();
-        // 判断是否存在
-        InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(id);
-        ThrowUtils.throwIf(oldInterfaceInfo == null, ErrorCode.NOT_FOUND_ERROR);
-        // 仅本人或管理员可编辑
-        if (!oldInterfaceInfo.getUserId().equals(loginUser.getId()) && !userService.isAdmin(loginUser)) {
-            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
-        }
         boolean result = interfaceInfoService.updateById(interfaceInfo);
         return ResultUtils.success(result);
     }
