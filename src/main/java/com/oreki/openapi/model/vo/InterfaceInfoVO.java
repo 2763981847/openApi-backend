@@ -10,6 +10,10 @@ import java.io.Serializable;
  */
 @Data
 public class InterfaceInfoVO implements Serializable {
+    /**
+     * id
+     */
+    private Long id;
 
     /**
      * 接口名

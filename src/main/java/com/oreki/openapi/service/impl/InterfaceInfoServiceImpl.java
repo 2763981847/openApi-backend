@@ -76,6 +76,7 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
         String description = interfaceInfoQueryRequest.getDescription();
         String url = interfaceInfoQueryRequest.getUrl();
         Long userId = interfaceInfoQueryRequest.getUserId();
+        Integer status = interfaceInfoQueryRequest.getStatus();
         String sortField = interfaceInfoQueryRequest.getSortField();
         String sortOrder = interfaceInfoQueryRequest.getSortOrder();
         queryWrapper.like(StringUtils.isNotBlank(name), "name", name);
@@ -83,9 +84,9 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
         queryWrapper.like(StringUtils.isNotBlank(url), "url", url);
         queryWrapper.eq(ObjectUtils.isNotEmpty(id), "id", id);
         queryWrapper.eq(ObjectUtils.isNotEmpty(userId), "userId", userId);
+        queryWrapper.eq(ObjectUtils.isNotEmpty(status), "status", status);
         queryWrapper.orderBy(SqlUtils.validSortField(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC),
                 sortField);
-        LambdaQueryWrapper<Object> wrapper = new LambdaQueryWrapper<>();
         return queryWrapper;
     }
 
