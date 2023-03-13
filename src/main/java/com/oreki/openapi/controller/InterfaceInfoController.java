@@ -98,20 +98,24 @@ public class InterfaceInfoController {
     @PostMapping("/update")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> updateInterfaceInfo(@RequestBody InterfaceInfoUpdateRequest interfaceInfoUpdateRequest) {
-        if (interfaceInfoUpdateRequest == null || interfaceInfoUpdateRequest.getId() <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        InterfaceInfo interfaceInfo = new InterfaceInfo();
-        BeanUtils.copyProperties(interfaceInfoUpdateRequest, interfaceInfo);
-        // 参数校验
-        interfaceInfoService.validInterfaceInfo(interfaceInfo, false);
-        long id = interfaceInfoUpdateRequest.getId();
-        // 判断是否存在
-        InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(id);
-        ThrowUtils.throwIf(oldInterfaceInfo == null, ErrorCode.NOT_FOUND_ERROR);
-        boolean result = interfaceInfoService.updateById(interfaceInfo);
-        return ResultUtils.success(result);
+        Boolean result = interfaceInfoService.updateInterfaceInfo(interfaceInfoUpdateRequest);
+        return result ? ResultUtils.success(true) : ResultUtils.error(ErrorCode.OPERATION_ERROR, "更新失败");
     }
+
+    @PostMapping("/online/{id}")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Boolean> onlineInterface(@PathVariable Long id) {
+        Boolean result = interfaceInfoService.onlineInterface(id);
+        return result ? ResultUtils.success(true) : ResultUtils.error(ErrorCode.OPERATION_ERROR, "上线失败");
+    }
+
+    @PostMapping("/offline/{id}")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Boolean> offlineInterface(@PathVariable Long id) {
+        Boolean result = interfaceInfoService.offlineInterface(id);
+        return result ? ResultUtils.success(true) : ResultUtils.error(ErrorCode.OPERATION_ERROR, "下线失败");
+    }
+
 
     @GetMapping("/list/page")
     public BaseResponse<Page<InterfaceInfoVO>> listInterfaceInfoVOByPage(InterfaceInfoQueryRequest interfaceInfoQueryRequest,

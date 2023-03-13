@@ -40,6 +40,18 @@ public class InterfaceInfo implements Serializable {
     private String url;
 
     /**
+     * 请求类型
+     */
+    @TableField(value = "method")
+    private String method;
+
+    /**
+     * 请求参数
+     */
+    @TableField(value = "request_params")
+    private String requestParams;
+
+    /**
      * 请求头
      */
     @TableField(value = "request_header")
@@ -51,11 +63,6 @@ public class InterfaceInfo implements Serializable {
     @TableField(value = "response_header")
     private String responseHeader;
 
-    /**
-     * 创建人
-     */
-    @TableField(value = "user_id")
-    private Long userId;
 
     /**
      * 接口状态（0 - 关闭， 1 - 开启））
@@ -64,10 +71,10 @@ public class InterfaceInfo implements Serializable {
     private Integer status;
 
     /**
-     * 请求类型
+     * 创建人
      */
-    @TableField(value = "method")
-    private String method;
+    @TableField(value = "user_id")
+    private Long userId;
 
     /**
      * 创建时间

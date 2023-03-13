@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
+
 import java.io.Serializable;
 import java.util.Date;
+
 import lombok.Data;
 
 /**
@@ -59,6 +61,16 @@ public class User implements Serializable {
      * 用户简介
      */
     private String userProfile;
+
+    /**
+     *accessKey
+     */
+    private String accessKey;
+
+    /**
+     *secretKey
+     */
+    private String secretKey;
 
     /**
      * 用户角色：user/admin/ban
